@@ -75,7 +75,7 @@
     </div>
 
     <script type="text/babel">
-      var serverURL = 'localhost';
+      var serverURL = 'http://localhost:8000';
       var devicesEndpoint = serverURL + '/devices';
       var deviceEndpoint = serverURL + '/devicestatus/:device_id';
       var deviceUpdateEndpoint = serverURL + '/devicestatus/:device_id/:value:';
@@ -110,6 +110,7 @@
       var Indicator = React.createClass({
         loadFromServer: function() {
           $.ajax({
+            type: "GET",
             url: deviceEndpoint.replace("device_id",this.props.deviceId),
             dataType: 'json',
             cache: false,
@@ -145,6 +146,7 @@
         toggle: function() {
           var on = !this.state.on;
           $.ajax({
+            type: "POST",
             url: deviceUpdateEndpoint.replace("device_id",this.props.deviceId).replace("value", on),
             dataType: 'json',
             cache: false,
@@ -158,6 +160,7 @@
         },
         loadFromServer: function() {
           $.ajax({
+            type: "GET",
             url: deviceEndpoint.replace("device_id",this.props.deviceId),
             dataType: 'json',
             cache: false,
