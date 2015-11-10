@@ -15,13 +15,6 @@
     <script src="https://fb.me/react-0.14.0.js"></script>
     <script src="https://fb.me/react-dom-0.14.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.js"></script>
-  
-  <!-- TODO: minimize for prod 
-    <script src="https://fb.me/react-0.14.0.min.js"></script>
-    <script src="https://fb.me/react-dom-0.14.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
-  -->
-  
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -113,6 +106,7 @@
             type: "GET",
             url: deviceEndpoint.replace("device_id",this.props.deviceId),
             dataType: 'json',
+            crossDomain: true,
             cache: false,
             done: function(data) {
               this.setState({on: data});
@@ -134,8 +128,8 @@
         render: function() {
           var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
           return (
-            <div className='btn-group'>
-              <button type='button' className={'btn btn-'+modifier}>
+            <div className={'btn-group' + ' ' + 'indicator'} name={this.props.text}>
+              <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
                 {this.props.text}
               </button>
             </div>
@@ -149,6 +143,7 @@
             type: "POST",
             url: deviceUpdateEndpoint.replace("device_id",this.props.deviceId).replace("value", on),
             dataType: 'json',
+            crossDomain: true,
             cache: false,
             done: function() {
               this.loadFromServer();
@@ -163,6 +158,7 @@
             type: "GET",
             url: deviceEndpoint.replace("device_id",this.props.deviceId),
             dataType: 'json',
+            crossDomain: true,
             cache: false,
             done: function(data) {
               this.setState({on: data});
@@ -184,8 +180,8 @@
         render: function() {
           var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
           return (
-            <div className='btn-group'>
-              <button type='button' onClick={this.toggle} className={'btn btn-'+modifier}>
+            <div className={'btn-group' + ' ' + 'switch'} name={this.props.text}>
+              <button type='button' onClick={this.toggle} className={'btn' + ' ' + 'btn-' + modifier}>
                 {this.props.text}
               </button>
             </div>
@@ -277,7 +273,7 @@
             previousValue = temp.maxValue;
           }
           return (
-            <div id={this.props.title.toLowerCase().replace(/\s/g, '-')}>
+            <div class='temperature-item' name={this.props.title}>
               <h2 className='sub-header'>{this.props.title + ': '} 
                 <span className={'label label-'+modifier}>
                   {this.state.temp.toFixed(1)+'\u00B0F'}
