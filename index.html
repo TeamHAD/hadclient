@@ -104,7 +104,7 @@
         loadFromServer: function() {
           $.ajax({
             type: "GET",
-            url: deviceEndpoint.replace("device_id",this.props.deviceId),
+            url: deviceEndpoint.replace(":device_id",this.props.deviceId),
             dataType: 'json',
             crossDomain: true,
             cache: false,
@@ -141,7 +141,7 @@
           var on = !this.state.on;
           $.ajax({
             type: "POST",
-            url: deviceUpdateEndpoint.replace("device_id",this.props.deviceId).replace("value", on),
+            url: deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", on),
             dataType: 'json',
             crossDomain: true,
             cache: false,
@@ -156,7 +156,7 @@
         loadFromServer: function() {
           $.ajax({
             type: "GET",
-            url: deviceEndpoint.replace("device_id",this.props.deviceId),
+            url: deviceEndpoint.replace(":device_id",this.props.deviceId),
             dataType: 'json',
             crossDomain: true,
             cache: false,
@@ -273,7 +273,7 @@
             previousValue = temp.maxValue;
           }
           return (
-            <div class='temperature-item' name={this.props.title}>
+            <div className='temperature-item' name={this.props.title}>
               <h2 className='sub-header'>{this.props.title + ': '} 
                 <span className={'label label-'+modifier}>
                   {this.state.temp.toFixed(1)+'\u00B0F'}
