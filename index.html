@@ -1,296 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<html>
+
+<head>
+    <meta charset="UTF-8" />
     <title>Home Automation Dashboard</title>
+    <link rel="stylesheet" href="home-style.css" />
+    <script src="logincheck.js"></script>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="dashboard.css">
+</head>
 
-    <script src="https://fb.me/react-0.14.0.js"></script>
-    <script src="https://fb.me/react-dom-0.14.0.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.js"></script>
+<body>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Team HAD</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
-      </div>
-    </nav>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <!-- <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li> -->
-          </ul>
-        </div>
-        <div id="main" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Dashboard</h1>
-          <div id="top-row"></div>
-          <div id='indoor-temperature-item'></div>
-          <div id='outdoor-temperature-item'></div>
-        </div>
-      </div>
+    <div id="header">
+        <h1> Home Automation Dashboard </h1>
     </div>
 
-    <script type="text/babel">
-      var serverURL = 'http://localhost:8000';
-      var devicesEndpoint = serverURL + '/devices';
-      var deviceEndpoint = devicesEndpoint + '/:device_id';
-      var deviceUpdateEndpoint = devicesEndpoint + '/:device_id/:value:';
-      var pollInterval = 2000;
+    <div>
+    <table>
+    <tr>
+        <td style="border-right: solid">
+            <img src="images/Home-Automation-System.jpg" />
+        </td>
 
-      var Row = React.createClass({
-        render: function() {
-          var index = 0;
-          var columns = this.props.columns.map(function(tagProps) {
-            index++;
-            return <Column key={index} tagProps={tagProps} />;
-          });
-          return (
-            <div className='row placeholders'>
-              {columns}
-            </div>
-          );
-        }
-      });
-      var Column = React.createClass({
-        render: function() {
-          return (
-            <div className='col-xs-6 col-sm-3 placeholder'>
-              {{
-                indicator: (<Indicator onModifier={this.props.tagProps.onModifier} offModifier={this.props.tagProps.offModifier} text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
-                switch: (<Switch onModifier={this.props.tagProps.onModifier} offModifier={this.props.tagProps.offModifier} text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />)
-              }[this.props.tagProps.tag]}
-            </div>
-          );
-        }
-      });
-      var Indicator = React.createClass({
-        loadFromServer: function() {
-          $.ajax({
-            type: "GET",
-            url: deviceEndpoint.replace(":device_id",this.props.deviceId),
-            dataType: 'json',
-            crossDomain: true,
-            cache: false,
-            done: function(data) {
-              this.setState({on: data});
-            }.bind(this),
-            fail: function(xhr, status, err) {
-              console.error(deviceEndpoint, status, err.toString());
-            }.bind(this)
-          });
-        },
-        getInitialState: function() {
-          return {
-            on: false
-          };
-        },            
-        componentDidMount: function() {
-          this.loadFromServer();
-          setInterval(this.loadFromServer, pollInterval);
-        },
-        render: function() {
-          var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
-          return (
-            <div className={'btn-group' + ' ' + 'indicator'} name={this.props.text}>
-              <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
-                {this.props.text}
-              </button>
-            </div>
-          );
-        }
-      });
-      var Switch = React.createClass({
-        toggle: function() {
-          var on = !this.state.on;
-          $.ajax({
-            type: "POST",
-            url: deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", on),
-            dataType: 'json',
-            crossDomain: true,
-            cache: false,
-            done: function() {
-              this.loadFromServer();
-            }.bind(this),
-            fail: function(xhr, status, err) {
-              console.error(deviceEndpoint, status, err.toString());
-            }.bind(this)
-          });
-        },
-        loadFromServer: function() {
-          $.ajax({
-            type: "GET",
-            url: deviceEndpoint.replace(":device_id",this.props.deviceId),
-            dataType: 'json',
-            crossDomain: true,
-            cache: false,
-            done: function(data) {
-              this.setState({on: data});
-            }.bind(this),
-            fail: function(xhr, status, err) {
-              console.error(deviceEndpoint, status, err.toString());
-            }.bind(this)
-          });
-        },
-        getInitialState: function() {
-          return {
-            on: false
-          };
-        },            
-        componentDidMount: function() {
-          this.loadFromServer();
-          setInterval(this.loadFromServer, pollInterval);
-        },
-        render: function() {
-          var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
-          return (
-            <div className={'btn-group' + ' ' + 'switch'} name={this.props.text}>
-              <button type='button' onClick={this.toggle} className={'btn' + ' ' + 'btn-' + modifier}>
-                {this.props.text}
-              </button>
-            </div>
-          );
-        }
-      });
+        <td style="padding-left: 50pt">
+            <!--<form action="userHome.html" method="post"> -->
+            <table id="signin">
+                    <tr>
+                        <td>
+                            <h2> Sign In </h2>
+                        </td>
+                    </tr>
 
-      var topRowColumns = [
-            {tag: 'indicator', onModifier:'danger', offModifier:'success', text:'Front Door', deviceId: '0'},
-            {tag: 'indicator', onModifier:'danger', offModifier:'success', text:'Back Window', deviceId: '1'},
-            {tag: 'switch', onModifier:'warning', offModifier:'default', text:'Outside Light', deviceId: '2'},
-            {tag: 'switch', onModifier:'warning', offModifier:'default', text:'Inside Light', deviceId: '3'}
-        ];
-      ReactDOM.render(<Row columns={topRowColumns} />, document.getElementById('top-row'));
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td> Username </td>
+                                    <td><input type="text" id="username" /></td>
+                                </tr>
+                                <tr>
+                                    <td> Password </td>
+                                    <td><input type="password" id="password" width=20 /></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
+                    <tr>
+                        <td>
+                            <a href="forgotPassword.html">Forgot Password?</a>
+                        </td>
+                    </tr>
 
-
-
-      var ProgressBar = React.createClass({
-        render: function() {
-          return (
-            <div className={'progress-bar progress-bar-'+this.props.modifier} style={{width: this.props.percentage+'%'}}>
-              <span className='sr-only'>temp: {this.props.modifier} is: {this.props.percentage.toFixed(1)}%</span>
-            </div>
-          );
-        }
-      });
-      var Progress = React.createClass({
-        render: function() {
-          var index = 0;
-          var progressBars = this.props.progressBars.map(function(progressBar) {
-            index++;
-            return <ProgressBar key={index} modifier={progressBar.modifier} percentage={progressBar.percentage} />;
-          });
-          return (
-            <div className='progress'>
-              {progressBars}
-            </div>
-          );
-        }
-      });
-      var Thermometer = React.createClass({
-        render: function() {
-          return (
-            <Progress progressBars={this.props.temps} />
-          );
-        }
-      });
-      var TemperatureItem = React.createClass({
-        getInitialState: function() {
-          return {
-            temp: Math.random()*100+40
-          };
-        },
-        render: function() {
-          var minTemp = 0;
-          var maxTemp = 140;
-          var temps = [
-            {
-              modifier: 'primary',
-              maxValue: 32
-            },
-            {
-              modifier: 'info',
-              maxValue: 65
-            },
-            {
-              modifier: 'success',
-              maxValue: 75
-            },
-            {
-              modifier: 'warning',
-              maxValue: 110
-            },
-            {
-              modifier: 'danger',
-              maxValue: maxTemp
-            }
-          ];
-          var modifier = temps[0].modifier;
-          var previousValue = minTemp;
-          for(var index=0; index<temps.length; index++){
-            var temp = temps[index];
-            var tempValue = this.state.temp<temp.maxValue? this.state.temp : temp.maxValue;
-            temp.percentage = (tempValue-previousValue)/maxTemp*100;
-            if(temp.percentage>0){
-              modifier = temp.modifier;
-            }
-            previousValue = temp.maxValue;
-          }
-          return (
-            <div className='temperature-item' name={this.props.title}>
-              <h2 className='sub-header'>{this.props.title + ': '} 
-                <span className={'label label-'+modifier}>
-                  {this.state.temp.toFixed(1)+'\u00B0F'}
-                </span>
-              </h2>
-              <Thermometer temps={temps} />
-            </div>
-            );
-        }
-      });
-
-      ReactDOM.render(<TemperatureItem title='Inside Temperature' />, document.getElementById('indoor-temperature-item'));
-      ReactDOM.render(<TemperatureItem title='Outside Temperature' />, document.getElementById('outdoor-temperature-item')); 
-    </script>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  </body>
+                    <tr>
+                        <td>
+                            <input type="submit" onclick="check()" value="Log In" />
+                        </td>
+                    </tr>
+            </table>
+<!--            </form> -->
+        </td>
+    </table>
+    </div>
+</body>
 </html>

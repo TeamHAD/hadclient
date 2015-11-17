@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>
+        Home Automation Dashboard
+    </title>
+    <script src="logincheck.js"></script>
+    <link rel="stylesheet" href="home-style.css" />
+<body>
+
+<div id="header">
+    <h1> Home Automation Dashboard </h1>
+</div>
+
+<div>
+    <table>
+        <tr>
+            <td>
+                <img src="images/Home-Automation-System.jpg" />
+            </td>
+
+            <td>
+                <table id="signin">
+                    <tr>
+                        <td>
+                            <h3> Sign In </h3>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td id="mesg">Incorrect Username and/or Password </td>
+                                </tr>
+
+                                <tr>
+                                    <td> Username </td>
+                                    <td> <input type="text" id="username" width=4></td>
+                                </tr>
+
+                                <tr>
+                                    <td> Password </td>
+                                    <td><input type="password" id="password" width=20></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <a href="forgotPassword.html"> Forgot Password?</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="button" onclick="check()">Log In</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+    </table>
+    </div>
+</body>
+</html>

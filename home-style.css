@@ -1,0 +1,41 @@
+div#header{
+    background-color: #8CBED6;
+}
+
+h1{
+    text-align: center;
+    font-family: Century;
+    font-size: 42pt;
+}
+
+div{
+    width: 100%;
+    border: 1px groove;
+}
+
+td#mesg{
+    color: red;
+    text-align: center;
+}
+
+input#username{
+    width: auto;
+    font-size: 12pt;
+    background-color: #8CBED6;
+}
+
+input#password{
+    width: auto;
+    font-size: 12pt;
+    background-color: #8CBED6;
+}
+
+table#signin{
+    vertical-align: middle;
+    /* align text for IE */
+}
+
+img{
+    width: 1000px;
+    height: 700px;
+}
