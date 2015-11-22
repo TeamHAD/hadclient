@@ -80,27 +80,6 @@
             }
         });
         var Indicator = React.createClass({
-            // loadFromServer: function() {
-            //   $.ajax({
-            //     type: "GET",
-            //     url: deviceEndpoint.replace(":device_id",this.props.deviceId),
-            //     dataType: 'json',
-            //     crossDomain: true,
-            //     cache: false,
-            //     done: function(data) {
-            //       console.log("success");
-            //       var onBoolean = (data.status == 1)? true : false;
-            //       this.setState({on: onBoolean});
-            //     }.bind(this),
-            //     fail: function(xhr, status, err) {
-            //       console.log("fail");
-            //       console.error(deviceEndpoint, status, err.toString());
-            //     }.bind(this),
-            //     always: function(){
-            //       console.log("always");
-            //     }.bind(this)
-            //   });
-            // },
             loadFromServer: function() {
               var onBoolean = this.state.on;
               $.ajax({
@@ -108,16 +87,12 @@
                 url: deviceEndpoint.replace(":device_id",this.props.deviceId),
                 dataType: 'json',
                 crossDomain: true,
-                cache: false,
-                }).done(function(data) {
-                  console.log("success");
-                  onBoolean = (data.status == 1)? true : false;
-                }).fail(function(xhr, status, err) {
-                  console.log("fail");
-                  console.error(deviceEndpoint, status, err.toString());
-                }).always(function(){
-                  console.log("always");
-                });
+                cache: false
+              }).done(function(data) {
+                onBoolean = (data.status == 1)? true : false;
+              }).fail(function(xhr, status, err) {
+                console.error(deviceEndpoint, status, err.toString());
+              });
               this.setState({on: onBoolean});
             },
             getInitialState: function() {
@@ -150,13 +125,11 @@
                 url: deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", onNumberic),
                 dataType: 'json',
                 crossDomain: true,
-                cache: false,
-                done: function() {
-                  this.loadFromServer();              
-                }.bind(this),
-                fail: function(xhr, status, err) {
-                  console.error(deviceEndpoint, status, err.toString());
-                }.bind(this)
+                cache: false
+              }).done(function(data) {
+                this.loadFromServer();              
+              }).fail(function(xhr, status, err) {
+                console.error(deviceEndpoint, status, err.toString());
               });
             },
             loadFromServer: function() {
@@ -165,14 +138,11 @@
                 url: deviceEndpoint.replace(":device_id",this.props.deviceId),
                 dataType: 'json',
                 crossDomain: true,
-                cache: false,
-                done: function(data) {
-                  var onBoolean = (data.status == 1)? true : false;
-                  this.setState({on: onBoolean});
-                }.bind(this),
-                fail: function(xhr, status, err) {
-                  console.error(deviceEndpoint, status, err.toString());
-                }.bind(this)
+                cache: false
+              }).done(function(data) {
+                onBoolean = (data.status == 1)? true : false;
+              }).fail(function(xhr, status, err) {
+                console.error(deviceEndpoint, status, err.toString());
               });
             },
             getInitialState: function() {
