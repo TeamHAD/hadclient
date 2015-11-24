@@ -50,8 +50,8 @@
         //var serverURL = 'http://10.7.10.201:8000';
         var devicesEndpoint = serverURL + '/devices';
         var deviceEndpoint = devicesEndpoint + '/:device_id';
-        var deviceUpdateEndpoint = devicesEndpoint + '/:device_id/:value:';
-        var pollInterval = 200000;
+        var deviceUpdateEndpoint = deviceEndpoint + '/:value';
+        var pollInterval = 2000;
 
         var Row = React.createClass({
             render: function() {
@@ -82,16 +82,18 @@
         var Indicator = React.createClass({
             loadFromServer: function() {
               var onBoolean = this.state.on;
+              var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
               $.ajax({
                 type: "GET",
-                url: deviceEndpoint.replace(":device_id",this.props.deviceId),
+                contentType: "application/json",
+                url: endpoint,
                 dataType: 'json',
                 crossDomain: true,
                 cache: false
               }).done(function(data) {
                 onBoolean = (data.status == 1)? true : false;
-              }).fail(function(xhr, status, err) {
-                console.error(deviceEndpoint, status, err.toString());
+              }).fail(function(data, status, err) {
+                console.error(endpoint, status, err.toString());
               });
               this.setState({on: onBoolean});
             },
@@ -120,29 +122,35 @@
               var on = !this.state.on;
               console.log('Changing state of: "' + this.props.text + '" from: "' + this.state.on + '" to: "' + on + '"');
               var onNumberic = on? 1 : 0;
+              var sthis = this;
+              var endpoint = deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", onNumberic);
               $.ajax({
                 type: "POST",
-                url: deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", onNumberic),
+                contentType: "application/json",
+                url: endpoint,
                 dataType: 'json',
                 crossDomain: true,
                 cache: false
               }).done(function(data) {
-                this.loadFromServer();              
+                sthis.loadFromServer();              
               }).fail(function(xhr, status, err) {
-                console.error(deviceEndpoint, status, err.toString());
+                console.error(endpoint, status, "Response: " + xhr.responseText + ", Error: " + err.toString());
               });
             },
             loadFromServer: function() {
+              var sthis = this;
+              var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
               $.ajax({
                 type: "GET",
-                url: deviceEndpoint.replace(":device_id",this.props.deviceId),
+                contentType: "application/json",
+                url: endpoint,
                 dataType: 'json',
                 crossDomain: true,
                 cache: false
               }).done(function(data) {
-                onBoolean = (data.status == 1)? true : false;
-              }).fail(function(xhr, status, err) {
-                console.error(deviceEndpoint, status, err.toString());
+                sthis.setState({on: (data.status == 1)});
+              }).fail(function(data, status, err) {
+                console.error(endpoint, status, err.toString());
               });
             },
             getInitialState: function() {
@@ -167,8 +175,8 @@
         });
 
         var topRowColumns = [
-            {tag: 'indicator', onModifier:'warning', offModifier:'default', text:'Front Door', deviceId: '0'},
-            {tag: 'indicator', onModifier:'warning', offModifier:'default', text:'Back Window', deviceId: '1'},
+            {tag: 'switch', onModifier:'warning', offModifier:'default', text:'Front Door', deviceId: '0'},
+            {tag: 'switch', onModifier:'warning', offModifier:'default', text:'Back Window', deviceId: '1'},
             {tag: 'switch', onModifier:'danger', offModifier:'default', text:'Outside Light', deviceId: '2'},
             {tag: 'switch', onModifier:'danger', offModifier:'default', text:'Inside Light', deviceId: '3'}
         ];
