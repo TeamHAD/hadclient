@@ -21,23 +21,31 @@
 </div>
 
 <div style="font-family: Century; font-size: 18pt">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-3 col-md-2 sidebar">
-                <ul class="nav nav-sidebar">
+    <!--<div class="container-fluid">
+        <div class="row">-->
+    <table style="width: 100%; height: 100%">
+        <tr>
+            <td style="vertical-align: top">
+                <!--<div class="col-sm-3 col-md-2 sidebar">-->
+                <ul class="nav nav-sidebar" style="background-color: #428bca">
                     <li class="active"><a href="userHome.html" style="color: snow">Overview</a></li>
                     <li class="active"><a href="devices.html" style="color: snow">Device Detail</a></li>
-                    <li><a href="settings.html" style="color: snow">Settings</a></li>
+                    <li><a href="profile.html" style="color: snow">User Profile</a></li>
                     <li><a href="index.html" style="color: snow">Logout</a></li>
                 </ul>
-            </div>
-
-            <div id="main" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                <nav>
-                    <a href="adam_desc.html" target="device_desc">ADAM-6066</a>
-                    <a href="adam6017_desc.html" target="device_desc">ADAM-6017</a>
-                </nav>
-                <script>
+                <!--</div>-->
+            </td>
+            <td>
+            <!--<div id="main" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
+                    <table>
+                        <tr>
+                            <td>
+                                <nav>
+                                <a href="adam_desc.html" target="device_desc">ADAM-6066</a>
+                                <a href="adam6017_desc.html" target="device_desc">ADAM-6017</a>
+                                </nav>
+                            </td>
+                   <!--<script>
                     function frame_size(id){
                         var height;
                         var width;
@@ -50,11 +58,19 @@
                         document.getElementById(id).height=height+"px";
                         document.getElementById(id).width=width+"px";
                     }
-                </script>
-                <iframe src="device_image.html" name="device_desc" style="border: none" width="1500px" height= "1500px" id="iframe_device"></iframe>
-            </div>
-        </div>
-    </div>
+                </script>-->
+                        <tr>
+                            <td>
+                                <iframe src="device_image.html" name="device_desc" style="border: none" width="1500px" height= "1500px" id="iframe_device"></iframe>
+                            </td>
+                        </tr>
+                    </table>
+                 <!--</div> -->
+                </td>
+            </tr>
+        </table>
+        <!--</div>
+    </div>-->
 </div>
 </body>
 </html>
