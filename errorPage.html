@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8" />
-    <title>
-        Home Automation Dashboard
-    </title>
-    <script src="javascript/logincheck.js"></script>
+    <title>Home Automation Dashboard</title>
     <link rel="stylesheet" href="css/home-style.css" />
+    <script src="javascript/logincheck.js"></script>
+
+</head>
+
 <body>
 
 <div id="header">
@@ -20,47 +22,49 @@
                 <img src="images/Home-Automation-System.jpg" />
             </td>
 
-            <td>
+            <td style="padding-left: 50pt">
+                <!--<form action="userHome.html" method="post"> -->
                 <table id="signin">
                     <tr>
                         <td>
-                            <h3> Sign In </h3>
+                            <h2> Sign In </h2>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
                             <table>
+
                                 <tr style="visibility: visible">
                                     <td id="mesg" colspan="2">Incorrect Username and/or Password </td>
                                 </tr>
-
                                 <tr>
                                     <td> Username </td>
-                                    <td> <input type="text" id="username" width=4></td>
+                                    <td><input type="text" id="username" /></td>
                                 </tr>
-
                                 <tr>
                                     <td> Password </td>
-                                    <td><input type="password" id="password" width=20></td>
+                                    <td><input type="password" id="password" width=20 /></td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
 
-                    <tr>
+                   <!-- <tr>
                         <td>
-                            <a href="forgotPassword.html"> Forgot Password?</a>
+                            <a href="forgotPassword.html">Forgot Password?</a>
                         </td>
-                    </tr>
+                    </tr> -->
+
                     <tr>
                         <td>
-                            <button type="button" onclick="check()">Log In</button>
+                            <input type="submit" onclick="check()" value="Log In" />
                         </td>
                     </tr>
                 </table>
+                <!--            </form> -->
             </td>
     </table>
-    </div>
+</div>
 </body>
 </html>
