@@ -37,237 +37,267 @@
             </div>
             <div id="main" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <h2 class="page-header" style="text-align: center; font-family: Century; font-size: 28pt">Overview</h2>
-                <div id="top-row" style="font-family: Century; font-size: 20pt; text-align: center"></div>
-                <div id='indoor-temperature-item' style="font-family: Century; font-size: 20pt; text-align: left"></div>
+                <div id="rows"></div>
                 <div id='outdoor-temperature-item' style="font-family: Century; font-size: 20pt; text-align: left"></div>
             </div>
         </div>
     </div>
 
     <script type="text/babel">
-        var serverURL = 'http://localhost:8000';
-        //var serverURL = 'http://10.7.10.201:8000';
-        var devicesEndpoint = serverURL + '/devices';
-        var deviceEndpoint = devicesEndpoint + '/:device_id';
-        var deviceUpdateEndpoint = deviceEndpoint + '/:value';
-        var pollInterval = 2000;
+      var serverURL = 'http://localhost:8000';
+      var devicesEndpoint = serverURL + '/devices';
+      var deviceEndpoint = devicesEndpoint + '/:device_id';
+      var deviceUpdateEndpoint = deviceEndpoint + '/:value';
+      var pollInterval = 2000;
 
-        var Row = React.createClass({
-            render: function() {
-              var index = 0;
-              var columns = this.props.columns.map(function(tagProps) {
-                index++;
-                return <Column key={index} tagProps={tagProps} />;
-              });
-              return (
-                <div className='row placeholders'>
-                  {columns}
-                </div>
-              );
-            }
-        });
-        var Column = React.createClass({
-            render: function() {
-              return (
-                <div className='col-xs-6 col-sm-3 placeholder'>
-                  {{
-                    indicator: (<Indicator onModifier={this.props.tagProps.onModifier} offModifier={this.props.tagProps.offModifier} text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
-                    switch: (<Switch onModifier={this.props.tagProps.onModifier} offModifier={this.props.tagProps.offModifier} text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />)
-                  }[this.props.tagProps.tag]}
-                </div>
-              );
-            }
-        });
-        var Indicator = React.createClass({
-            loadFromServer: function() {
-              var onBoolean = this.state.on;
-              var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
-              $.ajax({
-                type: "GET",
-                contentType: "application/json",
-                url: endpoint,
-                dataType: 'json',
-                crossDomain: true,
-                cache: false
-              }).done(function(data) {
-                onBoolean = (data.status == 1)? true : false;
-              }).fail(function(data, status, err) {
-                console.error(endpoint, status, err.toString());
-              });
-              this.setState({on: onBoolean});
-            },
-            getInitialState: function() {
-              return {
-                on: false
-              };
-            },            
-            componentDidMount: function() {
-              this.loadFromServer();
-              setInterval(this.loadFromServer, pollInterval);
-            },
-            render: function() {
-              var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
-              return (
-                <div className={'btn-group' + ' ' + 'indicator'} name={this.props.text}>
-                  <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
-                    {this.props.text}
-                  </button>
-                </div>
-              );
-            }
-        });
-        var Switch = React.createClass({
-            toggle: function() {
-              var on = !this.state.on;
-              console.log('Changing state of: "' + this.props.text + '" from: "' + this.state.on + '" to: "' + on + '"');
-              var onNumberic = on? 1 : 0;
-              var sthis = this;
-              var endpoint = deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", onNumberic);
-              $.ajax({
-                type: "POST",
-                contentType: "application/json",
-                url: endpoint,
-                dataType: 'json',
-                crossDomain: true,
-                cache: false
-              }).done(function(data) {
-                sthis.loadFromServer();              
-              }).fail(function(xhr, status, err) {
-                console.error(endpoint, status, "Response: " + xhr.responseText + ", Error: " + err.toString());
-              });
-            },
-            loadFromServer: function() {
-              var sthis = this;
-              var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
-              $.ajax({
-                type: "GET",
-                contentType: "application/json",
-                url: endpoint,
-                dataType: 'json',
-                crossDomain: true,
-                cache: false
-              }).done(function(data) {
-                sthis.setState({on: (data.status == 1)});
-              }).fail(function(data, status, err) {
-                console.error(endpoint, status, err.toString());
-              });
-            },
-            getInitialState: function() {
-              return {
-                on: false
-              };
-            },            
-            componentDidMount: function() {
-              this.loadFromServer();
-              setInterval(this.loadFromServer, pollInterval);
-            },
-            render: function() {
-              var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
-              return (
-                <div className={'btn-group' + ' ' + 'switch'} name={this.props.text}>
-                  <button type='button' onClick={this.toggle} className={'btn' + ' ' + 'btn-' + modifier}>
-                    {this.props.text}
-                  </button>
-                </div>
-              );
-            }
-        });
+      var Row = React.createClass({
+          render: function() {
+            var width = Math.floor(12/this.props.columns.length);
+            var columns = this.props.columns.map(function(tagProps, index) {
+              return <Column key={index} tagProps={tagProps} bootStrapSmallWidth={width} />;
+            });
+            return (
+              <div className='row placeholders'>
+                {columns}
+              </div>
+            );
+          }
+      });
+      var Column = React.createClass({
+          render: function() {
+            return (
+              <div className={'col-xs-' + this.props.bootStrapSmallWidth*2 + ' ' + 'col-sm-' + this.props.bootStrapSmallWidth + ' ' + 'placeholder'}>
+                {{
+                  door: (<Door text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
+                  window: (<Window text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
+                  light: (<Light text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
+                  temperature: (<TemperatureItem text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />)
+                }[this.props.tagProps.tag]}
+              </div>
+            );
+          }
+      });
 
-        var topRowColumns = [
-            {tag: 'switch', onModifier:'warning', offModifier:'default', text:'Front Door', deviceId: '0'},
-            {tag: 'switch', onModifier:'warning', offModifier:'default', text:'Back Window', deviceId: '1'},
-            {tag: 'switch', onModifier:'danger', offModifier:'default', text:'Outside Light', deviceId: '2'},
-            {tag: 'switch', onModifier:'danger', offModifier:'default', text:'Inside Light', deviceId: '3'}
-        ];
-        ReactDOM.render(<Row columns={topRowColumns} />, document.getElementById('top-row'));
-        
-        var ProgressBar = React.createClass({
-            render: function() {
-              return (
-                <div className={'progress-bar progress-bar-'+this.props.modifier} style={{width: this.props.percentage+'%'}}>
-                  <span className='sr-only'>temp: {this.props.modifier} is: {this.props.percentage.toFixed(1)}%</span>
-                </div>
-              );
-            }
-        });
-        var Progress = React.createClass({
-            render: function() {
-              var index = 0;
-              var progressBars = this.props.progressBars.map(function(progressBar) {
-                index++;
-                return <ProgressBar key={index} modifier={progressBar.modifier} percentage={progressBar.percentage} />;
-              });
-              return (
-                <div className='progress'>
-                  {progressBars}
-                </div>
-              );
-            }
-        });
-        var Thermometer = React.createClass({
-            render: function() {
-              return (
-                <Progress progressBars={this.props.temps} />
-              );
-            }
-        });
-        var TemperatureItem = React.createClass({
-            getInitialState: function() {
-              return {
-                temp: Math.random()*100+40
-              };
+      var LockMixins = {
+        getInitialState: function() {
+          return {
+            on: false
+          };
+        }, 
+        loadFromServer: function() {
+          var onBoolean = this.state.on;
+          var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
+          $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: endpoint,
+            dataType: 'json',
+            crossDomain: true,
+            cache: false
+          }).done(function(data) {
+            onBoolean = (data.status == 1)? true : false;
+          }).fail(function(data, status, err) {
+            console.error(endpoint, status, err.toString());
+          });
+          this.setState({on: onBoolean});
+        },        
+        componentDidMount: function() {
+          this.loadFromServer();
+          setInterval(this.loadFromServer, pollInterval);
+        }
+      }
+      var Door = React.createClass({
+        mixins: [LockMixins],
+        render: function() {
+          var modifier = this.state.on? "warning" : "default";
+          return (
+            <div className={'btn-group' + ' ' + 'door'} name={this.props.text}>
+              <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
+                {this.props.text}
+              </button>
+            </div>
+          );
+        }
+      });
+      var Window = React.createClass({
+        mixins: [LockMixins],
+        render: function() {
+          var modifier = this.state.on? "warning" : "default";
+          return (
+            <div className={'btn-group' + ' ' + 'door'} name={this.props.text}>
+              <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
+                {this.props.text}
+              </button>
+            </div>
+          );
+        }
+      });
+      var Light = React.createClass({
+        mixins: [LockMixins],
+        toggle: function() {
+          var on = !this.state.on;
+          console.log('Changing state of: "' + this.props.text + '" from: "' + this.state.on + '" to: "' + on + '"');
+          var onNumberic = on? 1 : 0;
+          var sthis = this;
+          var endpoint = deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", onNumberic);
+          $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: endpoint,
+            dataType: 'json',
+            crossDomain: true,
+            cache: false
+          }).done(function(data) {
+            sthis.loadFromServer();              
+          }).fail(function(xhr, status, err) {
+            console.error(endpoint, status, "Response: " + xhr.responseText + ", Error: " + err.toString());
+          });
+        }, 
+        render: function() {
+          var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
+          return (
+            <div className={'btn-group' + ' ' + 'light'} name={this.props.text}>
+              <button type='button' onClick={this.toggle} className={'btn' + ' ' + 'btn-' + modifier}>
+                {this.props.text}
+              </button>
+            </div>
+          );
+        }
+      });
+      var ProgressBar = React.createClass({
+        render: function() {
+          return (
+            <div className={'progress-bar progress-bar-'+this.props.modifier} style={{width: this.props.percentage+'%'}}>
+              <span className='sr-only'>temp: {this.props.modifier} is: {this.props.percentage.toFixed(1)}%</span>
+            </div>
+          );
+        }
+      });
+      var Progress = React.createClass({
+        render: function() {
+          var index = 0;
+          var progressBars = this.props.progressBars.map(function(progressBar) {
+            index++;
+            return <ProgressBar key={index} modifier={progressBar.modifier} percentage={progressBar.percentage} />;
+          });
+          return (
+            <div className='progress'>
+              {progressBars}
+            </div>
+          );
+        }
+      });
+      var Thermometer = React.createClass({
+        render: function() {
+          return (
+            <Progress progressBars={this.props.temps} />
+          );
+        }
+      });
+      var TemperatureItem = React.createClass({
+        getInitialState: function() {
+          return {
+            temp: Math.random()*100+40
+          };
+        },
+        loadFromServer: function() {
+          var tempFahrenheit = this.state.temp;
+          var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
+          $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: endpoint,
+            dataType: 'json',
+            crossDomain: true,
+            cache: false
+          }).done(function(data) {
+            tempFahrenheit = data.status*100*1.8+32;
+          }).fail(function(data, status, err) {
+            console.error(endpoint, status, err.toString());
+          });
+          this.setState({temp: tempFahrenheit});
+        },      
+        componentDidMount: function() {
+          this.loadFromServer();
+          setInterval(this.loadFromServer, pollInterval);
+        },
+        render: function() {
+          var minTemp = 0;
+          var maxTemp = 140;
+          var temps = [
+            {
+              modifier: 'primary',
+              maxValue: 32
             },
-            render: function() {
-              var minTemp = 0;
-              var maxTemp = 140;
-              var temps = [
-                {
-                  modifier: 'primary',
-                  maxValue: 32
-                },
-                {
-                  modifier: 'info',
-                  maxValue: 65
-                },
-                {
-                  modifier: 'success',
-                  maxValue: 75
-                },
-                {
-                  modifier: 'warning',
-                  maxValue: 110
-                },
-                {
-                  modifier: 'danger',
-                  maxValue: maxTemp
-                }
-              ];
-              var modifier = temps[0].modifier;
-              var previousValue = minTemp;
-              for(var index=0; index<temps.length; index++){
-                var temp = temps[index];
-                var tempValue = this.state.temp<temp.maxValue? this.state.temp : temp.maxValue;
-                temp.percentage = (tempValue-previousValue)/maxTemp*100;
-                if(temp.percentage>0){
-                  modifier = temp.modifier;
-                }
-                previousValue = temp.maxValue;
-              }
-              return (
-                <div className='temperature-item' name={this.props.title}>
-                  <h2 className='sub-header'>{this.props.title + ': '} 
-                    <span className={'label label-'+modifier}>
-                      {this.state.temp.toFixed(1)+'\u00B0F'}
-                    </span>
-                  </h2>
-                  <Thermometer temps={temps} />
-                </div>
-                );
+            {
+              modifier: 'info',
+              maxValue: 65
+            },
+            {
+              modifier: 'success',
+              maxValue: 75
+            },
+            {
+              modifier: 'warning',
+              maxValue: 110
+            },
+            {
+              modifier: 'danger',
+              maxValue: maxTemp
             }
-        });
+          ];
+          var modifier = temps[0].modifier;
+          var previousValue = minTemp;
+          for(var index=0; index<temps.length; index++){
+            var temp = temps[index];
+            var tempValue = this.state.temp<temp.maxValue? this.state.temp : temp.maxValue;
+            temp.percentage = (tempValue-previousValue)/maxTemp*100;
+            if(temp.percentage>0){
+              modifier = temp.modifier;
+            }
+            previousValue = temp.maxValue;
+          }
+          return (
+            <div className='temperature-item' name={this.props.text}>
+              <h2 className='sub-header'>{this.props.text + ': '} 
+                <span className={'label label-'+modifier}>
+                  {this.state.temp.toFixed(1)+'\u00B0F'}
+                </span>
+              </h2>
+              <Thermometer temps={temps} />
+            </div>
+            );
+        }
+      });
 
-        ReactDOM.render(<TemperatureItem title='Inside Temperature' />, document.getElementById('indoor-temperature-item'));
-        ReactDOM.render(<TemperatureItem title='Outside Temperature' />, document.getElementById('outdoor-temperature-item')); 
+      $(document).ready(function() {
+        var devices = [];
+        var endpoint = devicesEndpoint;
+        $.ajax({
+          type: "GET",
+          contentType: "application/json",
+          url: endpoint,
+          dataType: 'json',
+          crossDomain: true,
+          cache: false
+        }).done(function(devices) {
+          console.log("Done loading.")
+          var rows = {};
+          devices.forEach(function(device) {
+            rows[device.tag] = rows[device.tag] != 'undefined' && Object.prototype.toString.call(rows[device.tag]) == '[object Array]' ? rows[device.tag] : [];
+            rows[device.tag].push(device);
+          });
+          var rowsElement = document.getElementById('rows');
+          var row;
+          for(row in rows){
+            $('#rows').append('<div id="' + row + '-row" style="font-family: Century; font-size: 20pt; text-align: left">');
+            ReactDOM.render(<Row columns={rows[row]} />, document.getElementById(row + '-row'));
+          }
+        }).fail(function(data, status, err) {
+          console.error(endpoint, status, err.toString());
+        });
+      });
+      ReactDOM.render(<TemperatureItem text='Outdoor Temperature' />, document.getElementById('outdoor-temperature-item'));
     </script>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
