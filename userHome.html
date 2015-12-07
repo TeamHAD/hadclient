@@ -6,279 +6,88 @@
     <!--<meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Home Automation Dashboard - User Home Page</title>
-    <!-- <link rel="stylesheet" href="user-style.css" /> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/user-style.css">
     <script src="https://fb.me/react-0.14.0.js"></script>
     <script src="https://fb.me/react-dom-0.14.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.js"></script>
 </head>
 
-<body style="padding-top: 0px">
+<body>
+  <nav class="navbar navbar-top">
+    <div class="container-fluid">
+      <div id="navbar-header">
+        <h1>Home Automation Dashboard</h1>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div id="navbar-user-info" class="navbar-collapse collapse">
+        Welcome Test
+      </div>
+    </div>
+  </nav>
+  <div id="body" class="container-fluid">
+    <div id="bodyRow" class="row">
+      <div class="col-sm-2 col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+          <li class="active"><a href="userHome.html">Overview</a></li>
+          <li><a href="devices.html">Device Detail</a></li>
+          <li><a href="profile.html">User Profile</a></li>
+          <li><a href="index.html">Logout</a></li>
+        </ul>
+      </div>
+      <div id="content" class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2 main">
+        <h2 class="page-header">Overview</h2>
+        <div id="rows"></div>
+      </div>
+    </div>
+  </div>
 
-<div style="background-color: #8CBED6">
-    <h1 style="text-align: center; font-family: Century; font-size: 42pt"> Home Automation Dashboard </h1>
-</div>
+  <script type="text/babel">
+    var serverURL = 'http://localhost:8000';
+    var devicesEndpoint = serverURL + '/devices';
+    var deviceEndpoint = devicesEndpoint + '/:device_id';
+    var deviceUpdateEndpoint = deviceEndpoint + '/:value';
+    var pollInterval = 2000;
 
-<div style="background-color: #428bca">
-        <p style="text-align: right; color: snow; font-family: Century; font-size: 12pt; word-spacing: 10px; letter-spacing: 3px;"> Welcome Test</p>
-</div>
-
-<div style="font-family: Century; font-size: 13pt">
-    <!--<div class="container-fluid">
-        <div class="row">-->
-    <table style="width: 100%; height: 100%">
-        <tr>
-            <td>
-            <!--<div class="col-sm-3 col-md-2 sidebar">-->
-                <ul class="nav nav-sidebar" style="background-color: #428bca">
-                    <li class="active"><a href="userHome.html" style="color: snow">Overview</a></li>
-                    <li class="active"><a href="devices.html" style="color: snow">Device Detail</a></li>
-                    <li><a href="profile.html" style="color: snow">User Profile</a></li>
-                    <li><a href="index.html" style="color: snow">Logout</a></li>
-                </ul>
-            <!--</div>-->
-            </td>
-            <td>
-            <div id="main" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                <h2 class="page-header" style="text-align: center; font-family: Century; font-size: 28pt">Overview</h2>
-                <div id="rows"></div>
-                <div id='outdoor-temperature-item' style="font-family: Century; font-size: 20pt; text-align: left"></div>
-            </div>
-            </td>
-        <!--</div>
-    </div>-->
-        </tr>
-    </table>
-    <script type="text/babel">
-      var serverURL = 'http://localhost:8000';
-      var devicesEndpoint = serverURL + '/devices';
-      var deviceEndpoint = devicesEndpoint + '/:device_id';
-      var deviceUpdateEndpoint = deviceEndpoint + '/:value';
-      var pollInterval = 2000;
-
-      var Row = React.createClass({
-          render: function() {
-            var width = Math.floor(12/this.props.columns.length);
-            var columns = this.props.columns.map(function(tagProps, index) {
-              return <Column key={index} tagProps={tagProps} bootStrapSmallWidth={width} />;
-            });
-            return (
-              <div className='row placeholders'>
-                {columns}
-              </div>
-            );
-          }
-      });
-      var Column = React.createClass({
-          render: function() {
-            return (
-              <div className={'col-xs-' + this.props.bootStrapSmallWidth*2 + ' ' + 'col-sm-' + this.props.bootStrapSmallWidth + ' ' + 'placeholder'}>
-                {{
-                  door: (<Door text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
-                  window: (<Window text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
-                  light: (<Light text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
-                  temperature: (<TemperatureItem text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />)
-                }[this.props.tagProps.tag]}
-              </div>
-            );
-          }
-      });
-
-      var LockMixins = {
-        getInitialState: function() {
-          return {
-            on: false
-          };
-        }, 
-        loadFromServer: function() {
-          var onBoolean = this.state.on;
-          var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
-          $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: endpoint,
-            dataType: 'json',
-            crossDomain: true,
-            cache: false
-          }).done(function(data) {
-            onBoolean = (data.status == 1)? true : false;
-          }).fail(function(data, status, err) {
-            console.error(endpoint, status, err.toString());
-          });
-          this.setState({on: onBoolean});
-        },        
-        componentDidMount: function() {
-          this.loadFromServer();
-          setInterval(this.loadFromServer, pollInterval);
-        }
-      }
-      var Door = React.createClass({
-        mixins: [LockMixins],
+    var Row = React.createClass({
         render: function() {
-          var modifier = this.state.on? "warning" : "default";
-          return (
-            <div className={'btn-group' + ' ' + 'door'} name={this.props.text}>
-              <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
-                {this.props.text}
-              </button>
-            </div>
-          );
-        }
-      });
-      var Window = React.createClass({
-        mixins: [LockMixins],
-        render: function() {
-          var modifier = this.state.on? "warning" : "default";
-          return (
-            <div className={'btn-group' + ' ' + 'door'} name={this.props.text}>
-              <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
-                {this.props.text}
-              </button>
-            </div>
-          );
-        }
-      });
-      var Light = React.createClass({
-        mixins: [LockMixins],
-        toggle: function() {
-          var on = !this.state.on;
-          console.log('Changing state of: "' + this.props.text + '" from: "' + this.state.on + '" to: "' + on + '"');
-          var onNumberic = on? 1 : 0;
-          var sthis = this;
-          var endpoint = deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", onNumberic);
-          $.ajax({
-            type: "POST",
-            contentType: "application/json",
-            url: endpoint,
-            dataType: 'json',
-            crossDomain: true,
-            cache: false
-          }).done(function(data) {
-            sthis.loadFromServer();              
-          }).fail(function(xhr, status, err) {
-            console.error(endpoint, status, "Response: " + xhr.responseText + ", Error: " + err.toString());
-          });
-        }, 
-        render: function() {
-          var modifier = this.state.on? this.props.onModifier : this.props.offModifier;
-          return (
-            <div className={'btn-group' + ' ' + 'light'} name={this.props.text}>
-              <button type='button' onClick={this.toggle} className={'btn' + ' ' + 'btn-' + modifier}>
-                {this.props.text}
-              </button>
-            </div>
-          );
-        }
-      });
-      var ProgressBar = React.createClass({
-        render: function() {
-          return (
-            <div className={'progress-bar progress-bar-'+this.props.modifier} style={{width: this.props.percentage+'%'}}>
-              <span className='sr-only'>temp: {this.props.modifier} is: {this.props.percentage.toFixed(1)}%</span>
-            </div>
-          );
-        }
-      });
-      var Progress = React.createClass({
-        render: function() {
-          var index = 0;
-          var progressBars = this.props.progressBars.map(function(progressBar) {
-            index++;
-            return <ProgressBar key={index} modifier={progressBar.modifier} percentage={progressBar.percentage} />;
+          var width = Math.floor(12/this.props.columns.length);
+          var columns = this.props.columns.map(function(tagProps, index) {
+            return <Column key={index} tagProps={tagProps} bootStrapSmallWidth={width} />;
           });
           return (
-            <div className='progress'>
-              {progressBars}
+            <div className='row placeholders'>
+              {columns}
             </div>
           );
         }
-      });
-      var Thermometer = React.createClass({
+    });
+    var Column = React.createClass({
         render: function() {
           return (
-            <Progress progressBars={this.props.temps} />
+            <div className={'column' + ' ' + 'col-xs-' + this.props.bootStrapSmallWidth*2 + ' ' + 'col-sm-' + this.props.bootStrapSmallWidth + ' ' + 'placeholder'}>
+              {{
+                door: (<Door text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
+                window: (<Window text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
+                light: (<Light text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />),
+                temperature: (<TemperatureItem text={this.props.tagProps.text} deviceId={this.props.tagProps.deviceId} />)
+              }[this.props.tagProps.tag]}
+            </div>
           );
         }
-      });
-      var TemperatureItem = React.createClass({
-        getInitialState: function() {
-          return {
-            temp: Math.random()*100+40
-          };
-        },
-        loadFromServer: function() {
-          var tempFahrenheit = this.state.temp;
-          var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
-          $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            url: endpoint,
-            dataType: 'json',
-            crossDomain: true,
-            cache: false
-          }).done(function(data) {
-            tempFahrenheit = data.status*100*1.8+32;
-          }).fail(function(data, status, err) {
-            console.error(endpoint, status, err.toString());
-          });
-          this.setState({temp: tempFahrenheit});
-        },      
-        componentDidMount: function() {
-          this.loadFromServer();
-          setInterval(this.loadFromServer, pollInterval);
-        },
-        render: function() {
-          var minTemp = 0;
-          var maxTemp = 140;
-          var temps = [
-            {
-              modifier: 'primary',
-              maxValue: 32
-            },
-            {
-              modifier: 'info',
-              maxValue: 65
-            },
-            {
-              modifier: 'success',
-              maxValue: 75
-            },
-            {
-              modifier: 'warning',
-              maxValue: 110
-            },
-            {
-              modifier: 'danger',
-              maxValue: maxTemp
-            }
-          ];
-          var modifier = temps[0].modifier;
-          var previousValue = minTemp;
-          for(var index=0; index<temps.length; index++){
-            var temp = temps[index];
-            var tempValue = this.state.temp<temp.maxValue? this.state.temp : temp.maxValue;
-            temp.percentage = (tempValue-previousValue)/maxTemp*100;
-            if(temp.percentage>0){
-              modifier = temp.modifier;
-            }
-            previousValue = temp.maxValue;
-          }
-          return (
-            <div className='temperature-item' name={this.props.text}>
-              <h2 className='sub-header'>{this.props.text + ': '} 
-                <span className={'label label-'+modifier}>
-                  {this.state.temp.toFixed(1)+'\u00B0F'}
-                </span>
-              </h2>
-              <Thermometer temps={temps} />
-            </div>
-            );
-        }
-      });
+    });
 
-      $(document).ready(function() {
-        var devices = [];
-        var endpoint = devicesEndpoint;
+    var LockMixins = {
+      getInitialState: function() {
+        return {
+          on: false
+        };
+      }, 
+      loadFromServer: function() {
+        var onBoolean = this.state.on;
+        var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
         $.ajax({
           type: "GET",
           contentType: "application/json",
@@ -286,29 +95,223 @@
           dataType: 'json',
           crossDomain: true,
           cache: false
-        }).done(function(devices) {
-          console.log("Done loading.")
-          var rows = {};
-          devices.forEach(function(device) {
-            rows[device.tag] = rows[device.tag] != 'undefined' && Object.prototype.toString.call(rows[device.tag]) == '[object Array]' ? rows[device.tag] : [];
-            rows[device.tag].push(device);
-          });
-          var rowsElement = document.getElementById('rows');
-          var row;
-          for(row in rows){
-            $('#rows').append('<div id="' + row + '-row" style="font-family: Century; font-size: 20pt; text-align: left">');
-            ReactDOM.render(<Row columns={rows[row]} />, document.getElementById(row + '-row'));
-          }
+        }).done(function(data) {
+          onBoolean = (data.status == 1)? true : false;
         }).fail(function(data, status, err) {
           console.error(endpoint, status, err.toString());
         });
+        this.setState({on: onBoolean});
+      },        
+      componentDidMount: function() {
+        this.loadFromServer();
+        setInterval(this.loadFromServer, pollInterval);
+      }
+    }
+    var Door = React.createClass({
+      mixins: [LockMixins],
+      render: function() {
+        var modifier = this.state.on? "warning" : "default";
+        var imgSrc = this.state.on? "icons/lock.png" : "icons/unlock.png";
+        return (
+          <div className={'btn-group' + ' ' + 'door'} name={this.props.text}>
+            <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
+              {this.props.text}
+              <br />
+              <img src={imgSrc} />
+            </button>
+          </div>
+        );
+      }
+    });
+    var Window = React.createClass({
+      mixins: [LockMixins],
+      render: function() {
+        var modifier = this.state.on? "warning" : "default";
+        var imgSrc = this.state.on? "icons/lock.png" : "icons/unlock.png";
+        return (
+          <div className={'btn-group' + ' ' + 'window'} name={this.props.text}>
+            <button type='button' className={'btn' + ' ' + 'btn-' + modifier}>
+              {this.props.text}
+              <br />
+              <img src={imgSrc} />
+            </button>
+          </div>
+        );
+      }
+    });
+    var Light = React.createClass({
+      mixins: [LockMixins],
+      toggle: function() {
+        var on = !this.state.on;
+        console.log('Changing state of: "' + this.props.text + '" from: "' + this.state.on + '" to: "' + on + '"');
+        var onNumberic = on? 1 : 0;
+        var sthis = this;
+        var endpoint = deviceUpdateEndpoint.replace(":device_id",this.props.deviceId).replace(":value", onNumberic);
+        $.ajax({
+          type: "POST",
+          contentType: "application/json",
+          url: endpoint,
+          dataType: 'json',
+          crossDomain: true,
+          cache: false
+        }).done(function(data) {
+          sthis.loadFromServer();              
+        }).fail(function(xhr, status, err) {
+          console.error(endpoint, status, "Response: " + xhr.responseText + ", Error: " + err.toString());
+        });
+      }, 
+      render: function() {
+        var modifier = this.state.on? "danger" : "default";
+        var imgSrc = this.state.on? "icons/lighton.png" : "icons/lightoff.png";
+        return (
+          <div className={'btn-group' + ' ' + 'light'} name={this.props.text}>
+            <button type='button' onClick={this.toggle} className={'btn' + ' ' + 'btn-' + modifier}>
+              {this.props.text}
+              <br />
+              <img src={imgSrc} />
+            </button>
+          </div>
+        );
+      }
+    });
+    var ProgressBar = React.createClass({
+      render: function() {
+        return (
+          <div className={'progress-bar progress-bar-'+this.props.modifier} style={{width: this.props.percentage+'%'}}>
+            <span className='sr-only'>temp: {this.props.modifier} is: {this.props.percentage.toFixed(1)}%</span>
+          </div>
+        );
+      }
+    });
+    var Progress = React.createClass({
+      render: function() {
+        var index = 0;
+        var progressBars = this.props.progressBars.map(function(progressBar) {
+          index++;
+          return <ProgressBar key={index} modifier={progressBar.modifier} percentage={progressBar.percentage} />;
+        });
+        return (
+          <div className='progress'>
+            {progressBars}
+          </div>
+        );
+      }
+    });
+    var Thermometer = React.createClass({
+      render: function() {
+        return (
+          <Progress progressBars={this.props.temps} />
+        );
+      }
+    });
+    var TemperatureItem = React.createClass({
+      getInitialState: function() {
+        return {
+          temp: Math.random()*100+40
+        };
+      },
+      loadFromServer: function() {
+        var tempFahrenheit = this.state.temp;
+        var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
+        $.ajax({
+          type: "GET",
+          contentType: "application/json",
+          url: endpoint,
+          dataType: 'json',
+          crossDomain: true,
+          cache: false
+        }).done(function(data) {
+          tempFahrenheit = data.status*100*1.8+32;
+        }).fail(function(data, status, err) {
+          console.error(endpoint, status, err.toString());
+        });
+        this.setState({temp: tempFahrenheit});
+      },      
+      componentDidMount: function() {
+        this.loadFromServer();
+        setInterval(this.loadFromServer, pollInterval);
+      },
+      render: function() {
+        var minTemp = 0;
+        var maxTemp = 140;
+        var temps = [
+          {
+            modifier: 'primary',
+            maxValue: 32
+          },
+          {
+            modifier: 'info',
+            maxValue: 65
+          },
+          {
+            modifier: 'success',
+            maxValue: 75
+          },
+          {
+            modifier: 'warning',
+            maxValue: 110
+          },
+          {
+            modifier: 'danger',
+            maxValue: maxTemp
+          }
+        ];
+        var modifier = temps[0].modifier;
+        var previousValue = minTemp;
+        for(var index=0; index<temps.length; index++){
+          var temp = temps[index];
+          var tempValue = this.state.temp<temp.maxValue? this.state.temp : temp.maxValue;
+          temp.percentage = (tempValue-previousValue)/maxTemp*100;
+          if(temp.percentage>0){
+            modifier = temp.modifier;
+          }
+          previousValue = temp.maxValue;
+        }
+        return (
+          <div className='temperature-item' name={this.props.text}>
+            <h2 className='sub-header'>{this.props.text + ': '} 
+              <span className={'label label-'+modifier}>
+                {this.state.temp.toFixed(1)+'\u00B0F'}
+              </span>
+            </h2>
+            <Thermometer temps={temps} />
+          </div>
+          );
+      }
+    });
+
+    $(document).ready(function() {
+      var devices = [];
+      var endpoint = devicesEndpoint;
+      $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: endpoint,
+        dataType: 'json',
+        crossDomain: true,
+        cache: false
+      }).done(function(devices) {
+        console.log("Done loading.")
+        var rows = {};
+        devices.forEach(function(device) {
+          rows[device.tag] = rows[device.tag] != 'undefined' && Object.prototype.toString.call(rows[device.tag]) == '[object Array]' ? rows[device.tag] : [];
+          rows[device.tag].push(device);
+        });
+        var rowsElement = document.getElementById('rows');
+        var row;
+        for(row in rows){
+          $('#rows').append('<div id="' + row + '-row" class="item-row">');
+          ReactDOM.render(<Row columns={rows[row]} />, document.getElementById(row + '-row'));
+        }
+      }).fail(function(data, status, err) {
+        $('#page-header').text("Could not connect to backend server. Please refresh.");
+        console.error(endpoint, status, err.toString());
       });
-      ReactDOM.render(<TemperatureItem text='Outdoor Temperature' />, document.getElementById('outdoor-temperature-item'));
-    </script>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-</div>
+    });
+  </script>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </body>
 </html>
