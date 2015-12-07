@@ -86,6 +86,7 @@
         };
       }, 
       loadFromServer: function() {
+        var sthis = this;
         var onBoolean = this.state.on;
         var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
         $.ajax({
@@ -96,18 +97,17 @@
           crossDomain: true,
           cache: false
         }).done(function(data) {
-          onBoolean = (data.status == 1)? true : false;
+          sthis.setState({on: (data.status == 1)});
         }).fail(function(data, status, err) {
           console.error(endpoint, status, err.toString());
         });
-        this.setState({on: onBoolean});
-      },        
+      }, 
       componentDidMount: function() {
         this.loadFromServer();
         setInterval(this.loadFromServer, pollInterval);
       },
       render: function() {
-        var modifier = this.state.on? "warning" : "default";
+        var modifier = this.state.on? "danger" : "default";
         var imgSrc = this.state.on? "icons/lock.png" : "icons/unlock.png";
         return (
           <div className={'btn-group' + ' ' + 'door'} name={this.props.text}>
@@ -127,7 +127,7 @@
         };
       }, 
       loadFromServer: function() {
-        var onBoolean = this.state.on;
+        var sthis = this;
         var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
         $.ajax({
           type: "GET",
@@ -137,18 +137,17 @@
           crossDomain: true,
           cache: false
         }).done(function(data) {
-          onBoolean = (data.status == 1)? true : false;
+          sthis.setState({on: (data.status == 1)});
         }).fail(function(data, status, err) {
           console.error(endpoint, status, err.toString());
         });
-        this.setState({on: onBoolean});
-      },        
+      },  
       componentDidMount: function() {
         this.loadFromServer();
         setInterval(this.loadFromServer, pollInterval);
       },
       render: function() {
-        var modifier = this.state.on? "warning" : "default";
+        var modifier = this.state.on? "danger" : "default";
         var imgSrc = this.state.on? "icons/lock.png" : "icons/unlock.png";
         return (
           <div className={'btn-group' + ' ' + 'window'} name={this.props.text}>
@@ -168,7 +167,7 @@
         };
       }, 
       loadFromServer: function() {
-        var onBoolean = this.state.on;
+        var sthis = this;
         var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
         $.ajax({
           type: "GET",
@@ -178,11 +177,10 @@
           crossDomain: true,
           cache: false
         }).done(function(data) {
-          onBoolean = (data.status == 1)? true : false;
+          sthis.setState({on: (data.status == 1)});
         }).fail(function(data, status, err) {
           console.error(endpoint, status, err.toString());
         });
-        this.setState({on: onBoolean});
       },        
       componentDidMount: function() {
         this.loadFromServer();
@@ -208,7 +206,7 @@
         });
       }, 
       render: function() {
-        var modifier = this.state.on? "danger" : "default";
+        var modifier = this.state.on? "warning" : "default";
         var imgSrc = this.state.on? "icons/lighton.png" : "icons/lightoff.png";
         return (
           <div className={'btn-group' + ' ' + 'light'} name={this.props.text}>
@@ -258,7 +256,7 @@
         };
       },
       loadFromServer: function() {
-        var tempFahrenheit = this.state.temp;
+        var sthis = this;
         var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
         $.ajax({
           type: "GET",
@@ -268,11 +266,10 @@
           crossDomain: true,
           cache: false
         }).done(function(data) {
-          tempFahrenheit = data.status*100*1.8+32;
+          sthis.setState({temp: data.status*100*1.8+32});
         }).fail(function(data, status, err) {
           console.error(endpoint, status, err.toString());
         });
-        this.setState({temp: tempFahrenheit});
       },      
       componentDidMount: function() {
         this.loadFromServer();
