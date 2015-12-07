@@ -79,7 +79,7 @@
         }
     });
 
-    var LockMixins = {
+    var Door = React.createClass({
       getInitialState: function() {
         return {
           on: false
@@ -105,10 +105,7 @@
       componentDidMount: function() {
         this.loadFromServer();
         setInterval(this.loadFromServer, pollInterval);
-      }
-    }
-    var Door = React.createClass({
-      mixins: [LockMixins],
+      },
       render: function() {
         var modifier = this.state.on? "warning" : "default";
         var imgSrc = this.state.on? "icons/lock.png" : "icons/unlock.png";
@@ -124,7 +121,32 @@
       }
     });
     var Window = React.createClass({
-      mixins: [LockMixins],
+      getInitialState: function() {
+        return {
+          on: false
+        };
+      }, 
+      loadFromServer: function() {
+        var onBoolean = this.state.on;
+        var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
+        $.ajax({
+          type: "GET",
+          contentType: "application/json",
+          url: endpoint,
+          dataType: 'json',
+          crossDomain: true,
+          cache: false
+        }).done(function(data) {
+          onBoolean = (data.status == 1)? true : false;
+        }).fail(function(data, status, err) {
+          console.error(endpoint, status, err.toString());
+        });
+        this.setState({on: onBoolean});
+      },        
+      componentDidMount: function() {
+        this.loadFromServer();
+        setInterval(this.loadFromServer, pollInterval);
+      },
       render: function() {
         var modifier = this.state.on? "warning" : "default";
         var imgSrc = this.state.on? "icons/lock.png" : "icons/unlock.png";
@@ -140,7 +162,32 @@
       }
     });
     var Light = React.createClass({
-      mixins: [LockMixins],
+      getInitialState: function() {
+        return {
+          on: false
+        };
+      }, 
+      loadFromServer: function() {
+        var onBoolean = this.state.on;
+        var endpoint = deviceEndpoint.replace(":device_id",this.props.deviceId);
+        $.ajax({
+          type: "GET",
+          contentType: "application/json",
+          url: endpoint,
+          dataType: 'json',
+          crossDomain: true,
+          cache: false
+        }).done(function(data) {
+          onBoolean = (data.status == 1)? true : false;
+        }).fail(function(data, status, err) {
+          console.error(endpoint, status, err.toString());
+        });
+        this.setState({on: onBoolean});
+      },        
+      componentDidMount: function() {
+        this.loadFromServer();
+        setInterval(this.loadFromServer, pollInterval);
+      },
       toggle: function() {
         var on = !this.state.on;
         console.log('Changing state of: "' + this.props.text + '" from: "' + this.state.on + '" to: "' + on + '"');
