@@ -1,55 +1,13 @@
-/*
- * Placeholder dashboard ideas
- */
-
-.main .placeholders {
-    margin-bottom: 30px;
-    text-align: center;
-}
-.main .placeholders h4 {
-    margin-bottom: 0;
-}
-.main .placeholder {
-    margin-bottom: 20px;
-}
-.main .placeholder img {
-    display: inline-block;
-    border-radius: 50%;
+table{
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 20px;
+    font-family: Century;
+    font-size: 20pt;
 }
 
-/*
- * Button styling
- */
-.main .btn-group {
-    width: 100%;
-    height: 100%;
-}
+tr:nth-child(even){
+    background-color: #8CBED6;
 
-.main button {
-    width: 100%;
-    height: 100%;
-    white-space: normal;
-}
-
-.main button img {
-    display: block;
-    max-width:50px;
-    max-height:100px;
-    width: auto;
-    height: auto;
-}
-
-.main .temperature-item {
-    
-    font-size: 20pt; 
-    text-align: left;
-}
-
-/*
- * Global add-ons
- */
-
-.main .sub-header {
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
 }

@@ -6,82 +6,64 @@
     <!--<meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Home Automation Dashboard - User Home Page</title>
-    <!-- <link rel="stylesheet" href="user-style.css" /> -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="user-style.css" />
     <script src="https://fb.me/react-0.14.0.js"></script>
     <script src="https://fb.me/react-dom-0.14.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.js"></script>
-    <style>
-        table{
-            padding-left: 20px;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            padding-right: 20px;
-            font-family: Century;
-            font-size: 20pt;
-        }
-
-        tr:nth-child(even){
-            background-color: #8CBED6;
-
-        }
-    </style>
 </head>
 
-<body style="padding-top: 0px">
-<div style="background-color: #8CBED6">
-    <h1 style="text-align: center; font-family: Century; font-size: 42pt"> Home Automation Dashboard </h1>
-</div>
-
-<div style="background-color: #428bca">
-    <p style="text-align: right; color: snow; font-family: Century; font-size: 12pt; word-spacing: 10px; letter-spacing: 3px;"> Welcome Test
-    </p>
-</div>
-
-<div style="font-family: Century; font-size: 13pt">
-    <!-- <div class="container-fluid">
-        <div class="row">-->
-            <table style="height: 100%; width: 100%">
-                <tr>
-                    <td>
-                        <ul class="nav nav-sidebar" style="background-color: #428bca">
-                            <li class="active"><a href="userHome.html" style="color: snow">Overview</a></li>
-                            <li class="active"><a href="devices.html" style="color: snow">Device Detail</a></li>
-                            <li><a href="profile.html" style="color: snow">User Profile</a></li>
-                            <li><a href="index.html" style="color: snow">Logout</a></li>
-                        </ul>
-                    </td>
-                    <td style="padding-left: 50px">
-            <!--<div id="main" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"> -->
-                        <h2 class="page-header" style="text-align: center; font-family: Century; font-size: 28pt">User Profile</h2>
-                        <table>
-                            <tr>
-                                <td rowspan="5"><img src="images/user_img.png" width="40%" height="40%"></td>
-                                <td>Username: </td>
-                                <td>test</td>
-                            </tr>
-                            <tr>
-                                <td>First Name: </td>
-                                <td>Test</td>
-                            </tr>
-                            <tr>
-                                <td>Last Name: </td>
-                                <td>User</td>
-                            </tr>
-                            <tr>
-                                <td>Address: </td>
-                                <td>Boston University, Boston, Massachusetts - 02215</td>
-                            </tr>
-                            <tr>
-                                <td>Contact Number: </td>
-                                <td>(444)-444-4444</td>
-                            </tr>
-                        </table>
-                 </td>
-                </tr>
-                </table>
-        <!--</div>
-    </div>-->
-</div>
+<body>
+  <nav class="navbar navbar-top">
+    <div class="container-fluid">
+      <div id="navbar-header">
+        <h1>Home Automation Dashboard</h1>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div id="navbar-user-info" class="navbar-collapse collapse">
+        Welcome Test
+      </div>
+    </div>
+  </nav>
+  <div id="body" class="container-fluid">
+    <div id="bodyRow" class="row">
+      <div class="col-sm-2 col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+          <li><a href="userHome.html">Overview</a></li>
+          <li><a href="devices.html">Device Detail</a></li>
+          <li class="active"><a href="profile.html">User Profile</a></li>
+          <li><a href="index.html">Logout</a></li>
+        </ul>
+      </div>
+      <div id="content" class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2 main">
+        <h2 class="page-header">User Profile</h2>
+        <table>
+            <tr>
+                <td rowspan="5"><img src="images/user_img.png" width="40%" height="40%"></td>
+                <td>Username: </td>
+                <td>test</td>
+            </tr>
+            <tr>
+                <td>First Name: </td>
+                <td>Test</td>
+            </tr>
+            <tr>
+                <td>Last Name: </td>
+                <td>User</td>
+            </tr>
+            <tr>
+                <td>Address: </td>
+                <td>Boston University, Boston, Massachusetts - 02215</td>
+            </tr>
+            <tr>
+                <td>Contact Number: </td>
+                <td>(444)-444-4444</td>
+            </tr>
+        </table>
+      </div>
+    </div>
+  </div>                 
 </body>
 </html>
