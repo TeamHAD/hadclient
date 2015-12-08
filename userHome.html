@@ -324,6 +324,22 @@
       }
     });
 
+    function adjustRowHeights() {
+      $('.item-row .row').each(function() {
+        $(this).height("auto");
+      });
+      setTimeout(function() {
+        $('.item-row .row').each(function() {
+          var maxColHeight = 0;
+          $(this).find('.column').each(function() {
+            var colHeight = $(this).height();
+            maxColHeight = colHeight > maxColHeight? colHeight : maxColHeight;
+          });
+          $(this).height(maxColHeight);
+        });
+      }, 1000);
+    }
+
     $(document).ready(function() {
       var devices = [];
       var endpoint = devicesEndpoint;
@@ -347,11 +363,23 @@
           $('#rows').append('<div id="' + row + '-row" class="item-row">');
           ReactDOM.render(<Row columns={rows[row]} />, document.getElementById(row + '-row'));
         }
+        adjustRowHeights();
       }).fail(function(data, status, err) {
         $('#page-header').text("Could not connect to backend server. Please refresh.");
         console.error(endpoint, status, err.toString());
       });
     });
+    var addEvent = function(object, type, callback) {
+        if (object == null || typeof(object) == 'undefined') return;
+        if (object.addEventListener) {
+            object.addEventListener(type, callback, false);
+        } else if (object.attachEvent) {
+            object.attachEvent("on" + type, callback);
+        } else {
+            object["on"+type] = callback;
+        }
+    };
+    addEvent(window, "resize", adjustRowHeights);
   </script>
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
